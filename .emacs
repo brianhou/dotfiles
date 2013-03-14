@@ -40,8 +40,8 @@
 
 ;; Make custom bash files show up in sh-mode
 (let ((custom-bash-files '((".bash_aliases" . sh-mode)
-			   (".gitprompt" . sh-mode)
-			   (".private_bash_aliases" . sh-mode))))
+                           (".gitprompt" . sh-mode)
+                           (".private_bash_aliases" . sh-mode))))
   (setq auto-mode-alist (append auto-mode-alist custom-bash-files)))
 
 ;; Associate the .text file format with Markdown, turn on visual-line
@@ -71,7 +71,7 @@
   "Bury *scratch* buffer instead of killing it."
   (let ((buffer-to-kill (ad-get-arg 0)))
     (if (equal buffer-to-kill "*scratch*")
-	(bury-buffer)
+        (bury-buffer)
       ad-do-it)))
 (defun save-todo ()
   "Save the contents of the *scratch* buffer into TODO-FILENAME."
@@ -92,3 +92,13 @@
 (global-set-key (kbd "C-c <left>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c a") 'mc/mark-all-in-region)
+
+;; Adding timestamps to Messages buffer
+(defadvice message (before test-symbol activate)
+  (if (not (string-equal (ad-get-arg 0) "%s%s"))
+    (let ((deactivate-mark nil))
+      (save-excursion
+        (set-buffer "*Messages*")
+        (goto-char (point-max))
+        (if (not (bolp)) (newline))
+        (insert (format-time-string "[%T] " (current-time)))))))
