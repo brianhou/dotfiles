@@ -25,7 +25,7 @@
 (global-linum-mode t) ;; Show line numbers
 (global-subword-mode t) ;; Jumping between words intelligently
 (mouse-avoidance-mode 'exile) ;; Banish mouse when mark is near
-(tool-bar-mode nil) ;; Turning off stupid toolbar
+(tool-bar-mode 0) ;; Turning off stupid toolbar
 
 ;; Turning on ido mode!
 (require 'ido)
