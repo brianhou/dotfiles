@@ -1,6 +1,8 @@
 ;; Adding ~/.emacs.d to load path
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/multiple-cursors.el")
+(add-to-list 'load-path "~/.emacs.d/expand-region.el")
+(add-to-list 'load-path "~/.emacs.d/yasnippet")
 
 ;; Adding themes (solarized)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
@@ -92,6 +94,11 @@
 (global-set-key (kbd "C-c <left>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c a") 'mc/mark-all-in-region)
+
+(require 'yasnippet)
+(yas-global-mode 1)
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
 
 ;; Adding timestamps to Messages buffer
 (defadvice message (before test-symbol activate)
