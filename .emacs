@@ -1,8 +1,11 @@
+(defun add-to-loadpath (&rest dirs) "Add dirs to load-path"
+  (dolist (dir dirs load-path) (add-to-list 'load-path dir)))
+
 ;; Adding ~/.emacs.d to load path
-(add-to-list 'load-path "~/.emacs.d")
-(add-to-list 'load-path "~/.emacs.d/multiple-cursors.el")
-(add-to-list 'load-path "~/.emacs.d/expand-region.el")
-(add-to-list 'load-path "~/.emacs.d/yasnippet")
+(add-to-loadpath "~/.emacs.d"
+                 "~/.emacs.d/multiple-cursors.el"
+                 "~/.emacs.d/expand-region.el"
+                 "~/.emacs.d/yasnippet")
 
 ;; Adding themes (solarized)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
@@ -49,51 +52,49 @@
 (add-hook 'markdown-mode-hook 'visual-line-mode)
 (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
 
-;; Copying things from the CS61B .emacs file (mostly for Java coding)
+;; Copying things from the CS61B .emacs file
 (add-hook 'java-mode-hook
- (lambda ()
-  (setq compile-command "javac -g") ;; Compile with javac -g
-  (local-set-key (kbd "C-x C-e") 'compile)))
-(setq next-screen-context-lines 5 ;; Leave 5 lines of context when scrolling
-      indent-tabs-mode nil) ;; Re-tab with spaces, not tabs
+  (lambda ()
+    (setq compile-command "javac -g") ;; Compile with javac -g
+    (local-set-key (kbd "C-x C-e") 'compile)))
+(setq next-screen-context-lines 2 indent-tabs-mode nil)
 
 ;; Copying things from the CS61C .emacs file
 (add-hook 'c-mode-hook
- (lambda ()
-  (setq compile-command "gcc -o -g") ;; Compile with gcc -o -g
-  (local-set-key (kbd "C-x C-e") 'compile)))
+  (lambda ()
+    (setq compile-command "gcc -g -o") ;; Compile with gcc -g -o
+    (local-set-key (kbd "C-x C-e") 'compile)))
 
-;; Set persistent todo file at ~/.todo based off
+;; Set persistent *scratch* buffer (todo file at ~/.todo) based off
 ;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
 ;; and http://stackoverflow.com/a/358740
 (setq initial-major-mode 'markdown-mode) ;; set *scratch* mode to markdown
-(defvar TODO-FILENAME "~/.todo" "to-do file location")
-(defadvice kill-buffer (around kill-buffer-around-advice activate)
+(defadvice kill-buffer (around bury-scratch activate)
   "Bury *scratch* buffer instead of killing it."
   (let ((buffer-to-kill (ad-get-arg 0)))
     (if (equal buffer-to-kill "*scratch*")
         (bury-buffer)
       ad-do-it)))
-(defun save-todo ()
-  "Save the contents of the *scratch* buffer into TODO-FILENAME."
-  (with-current-buffer (get-buffer "*scratch*")
-    (write-region (point-min) (point-max) TODO-FILENAME)))
+(defvar TODO-FILENAME "~/.todo" "to-do file location")
 (defun load-todo ()
   "Load the contents of TODO-FILENAME into the *scratch* buffer."
-  (with-current-buffer (get-buffer "*scratch*")
+  (with-current-buffer "*scratch*"
     (delete-region (point-min) (point-max))
     (insert-file-contents TODO-FILENAME)))
+(defun save-todo ()
+  "Save the contents of the *scratch* buffer into TODO-FILENAME."
+  (with-current-buffer "*scratch*"
+    (write-region (point-min) (point-max) TODO-FILENAME)))
 (push 'save-todo kill-emacs-hook) ;; Save before killing
 (load-todo) ;; Run load-todo function at startup
 
-;; Setting up multiple-cursors-mode
+;; Setting up some cool packages
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-c <right>") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-c <left>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c a") 'mc/mark-all-in-region)
-
 (require 'yasnippet)
 (yas-global-mode 1)
 (require 'expand-region)
@@ -107,4 +108,4 @@
         (set-buffer "*Messages*")
         (goto-char (point-max))
         (if (not (bolp)) (newline))
-        (insert (format-time-string "[%T] " (current-time)))))))
+        (insert (format-time-string "[%T] "))))))
