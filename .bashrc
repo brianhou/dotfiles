@@ -25,8 +25,8 @@ shopt -s checkwinsize
 #shopt -s globstar
 
 # Adding git functions from http://amatsukawa.com/git-branch-command-line.html
-if [ -f ~/.gitprompt ]; then
-    . ~/.gitprompt
+if [ -f ~/.gitprompt.sh ]; then
+    . ~/.gitprompt.sh
 fi
 
 # make less more friendly for non-text input files, see lesspipe(1)

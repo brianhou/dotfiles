@@ -42,7 +42,6 @@
 
 ;; Make custom bash files show up in sh-mode
 (let ((custom-bash-files '((".bash_aliases" . sh-mode)
-                           (".gitprompt" . sh-mode)
                            (".private_bash_aliases" . sh-mode))))
   (setq auto-mode-alist (append auto-mode-alist custom-bash-files)))
 
