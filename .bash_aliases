@@ -19,3 +19,4 @@ alias ..='cd ..'
 # easily remap keyboard for right control. run again to reverse.
 # in other words, if right control isn't acting as expected, remap.
 alias remap="xmodmap -e 'remove Control = Control_R' -e 'keysym Control_R = Menu' -e 'keysym Menu = Control_R' -e 'add Control = Control_R'"
+alias open='xdg-open'
