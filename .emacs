@@ -20,17 +20,19 @@
   recenter-positions '(top middle bottom)
   next-screen-context-lines 2
   indent-tabs-mode nil
-  echo-keystrokes 0.1)
+  echo-keystrokes 0.3
+  kill-whole-line 1)
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 
 ;;; Custom key bindings
-;; (global-set-key (kbd "RET") 'newline-and-indent)
-(global-set-key (kbd "RET") 'reindent-then-newline-and-indent)
+(global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "<f12>") 'count-lines-region)
 (global-set-key (kbd "C-`") 'toggle-truncate-lines)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
 
 ;;; Minor modes
 (column-number-mode t) ; View column numbers in the mode line
@@ -46,6 +48,7 @@
 ;;; Turning on ido mode!
 (require 'ido)
 (ido-mode t)
+(setq ido-auto-merge-work-directories-length -1) ; To create new files
 
 ;;; Matching parentheses customizations
 (show-paren-mode t)
@@ -113,17 +116,42 @@
 (global-set-key (kbd "C-c <left>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c a") 'mc/mark-all-in-region)
-(require 'yasnippet)
-(yas-global-mode 1)
-(setq yas/prompt-functions '(yas/ido-prompt yas/completing-prompt))
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
+(require 'yasnippet)
+(yas-global-mode 1)
+(setq yas-prompt-functions '(yas/ido-prompt yas/completing-prompt))
 
-;;; Adding timestamps to Messages buffer
 (defadvice message (before test-symbol activate)
+  "Includes timestamp of message."
   (if (not (string-equal (ad-get-arg 0) "%s%s"))
       (let ((deactivate-mark nil))
         (with-current-buffer "*Messages*"
           (goto-char (point-max))
           (if (not (bolp)) (newline))
           (insert (format-time-string "[%T] "))))))
+
+(defadvice yank (around yank-and-indent)
+  "Indents after yanking."
+  (let ((point-before (point)))
+    ad-do-it
+    (indent-region point-before (point))))
+(ad-activate 'yank)
+
+(defun kill-line-and-one-space (&optional ARG)
+  "Kill a line. Leave one space."
+  (defun multiple-spaces ()
+    "If both the character at point and one of the characters
+     around it are spaces, return true."
+    (let ((space 32))
+      (and (char-equal (char-after) space)
+           (or (char-equal (char-before) space)
+               (char-equal (char-after (+ (point) 1)) space)))))
+  (interactive)
+  (let ((one-space (and (not (bolp)) (eolp))))
+    (kill-line ARG)
+    (if (and one-space (multiple-spaces))
+        (just-one-space 1))))
+(global-set-key (kbd "C-k") 'kill-line-and-one-space)
+
+(message "Successfully loaded personal settings.")
