@@ -44,6 +44,8 @@
 (global-subword-mode t) ; Jump between words intelligently
 (mouse-avoidance-mode 'exile) ; Banish mouse when mark is near
 (tool-bar-mode 0) ; Turn off stupid toolbar
+(set-scroll-bar-mode nil) ; Turn off scrollbars
+(winner-mode t) ; Revert to previous window configuration
 
 ;;; Only do certain things if it's graphical
 (if (display-graphic-p)
@@ -116,8 +118,8 @@
 ;;; Setting up some cool packages
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
-(global-set-key (kbd "C-c <right>") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-c <left>") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c <M-right>") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-c <M-left>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c a") 'mc/mark-all-in-region)
 (require 'expand-region)
@@ -172,5 +174,7 @@ negative; error if CHAR not found. Ignores CHAR at point."
     (if (and one-space (multiple-spaces))
         (just-one-space 1))))
 (global-set-key (kbd "C-k") 'kill-line-and-one-space)
+
+(load "xscheme")
 
 (message "Successfully loaded personal settings.")
