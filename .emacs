@@ -126,6 +126,21 @@
 (yas-global-mode 1)
 (setq yas-prompt-functions '(yas/ido-prompt yas/completing-prompt))
 
+(defun zap-up-to-char (arg char)
+  "Kill up to, but not including ARGth occurrence of CHAR. Case is ignored if
+`case-fold-search' is non-nil in the current buffer. Goes backward if ARG is
+negative; error if CHAR not found. Ignores CHAR at point."
+  (interactive "p\ncZap up to char: ")
+  (let ((direction (if (>= arg 0) 1 -1)))
+    (kill-region (point)
+                 (progn
+                   (forward-char direction)
+                   (unwind-protect
+                       (search-forward (char-to-string char) nil nil arg)
+                     (backward-char direction))
+                   (point)))))
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+
 (defadvice message (before test-symbol activate)
   "Includes timestamp of message."
   (if (not (string-equal (ad-get-arg 0) "%s%s"))
