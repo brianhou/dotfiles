@@ -42,16 +42,12 @@
 (menu-bar-mode 0) ; Turn off stupid toolbar
 (set-scroll-bar-mode nil) ; Turn off scrollbars
 (winner-mode t) ; Revert to previous window configuration
+(ido-mode t) ; Turning on ido mode!
 (if (display-graphic-p) (progn (global-hl-line-mode t))) ; Highlight line
-
-;;; Turning on ido mode!
-(require 'ido)
-(ido-mode t)
 
 ;;; Matching parentheses customizations
 (show-paren-mode t)
 (setq-default show-paren-delay 0)
-(require 'paren)
 (set-face-foreground 'show-paren-match-face "#FFF")
 (set-face-attribute 'show-paren-match-face nil :weight 'ultra-bold)
 
@@ -124,7 +120,6 @@ negative; error if CHAR not found. Ignores CHAR at point."
 ;;; Set persistent *scratch* buffer (todo file at ~/.todo) based off
 ;;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
 ;;; and http://stackoverflow.com/a/358740
-(require 'markdown-mode)
 (setq initial-major-mode 'markdown-mode) ; set *scratch* mode to markdown
 (defadvice kill-buffer (around bury-scratch activate)
   "Bury *scratch* buffer instead of killing it."
@@ -148,7 +143,6 @@ negative; error if CHAR not found. Ignores CHAR at point."
 ;;; Packages on packages on packages...
 
 ;; ace-jump-mode
-(require 'ace-jump-mode)
 (autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
 (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
 (autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back" t)
@@ -157,11 +151,9 @@ negative; error if CHAR not found. Ignores CHAR at point."
 (setq ace-jump-mode-gray-background nil)
 
 ;; expand-region.el
-(require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 ;; multiple-cursors.el
-(require 'multiple-cursors)
 (global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-c <M-right>") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-c <M-left>") 'mc/mark-previous-like-this)
@@ -169,7 +161,6 @@ negative; error if CHAR not found. Ignores CHAR at point."
 (global-set-key (kbd "C-c a") 'mc/mark-all-in-region)
 
 ;; yasnippet
-(require 'yasnippet)
 (yas-global-mode 1)
 (setq yas-prompt-functions '(yas/ido-prompt yas/completing-prompt))
 
