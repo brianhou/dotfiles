@@ -84,6 +84,14 @@
     (setq compile-command "gcc -g") ; Compile with gcc -g
     (local-set-key (kbd "C-x C-e") 'compile)))
 
+(defun eval-and-replace ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (backward-kill-sexp)
+  (prin1 (eval (read (current-kill 0)))
+         (current-buffer)))
+(global-set-key (kbd "C-c i") 'eval-and-replace)
+
 ;;; Customize some built-in functions
 (defun zap-up-to-char (arg char)
   "Kill up to, but not including ARGth occurrence of CHAR. Case is ignored if
