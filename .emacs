@@ -22,16 +22,17 @@
 (put 'narrow-to-region 'disabled nil)
 
 ;;; Custom key bindings
+(global-set-key (kbd "<f6>") 'execute-extended-command) ; M-x sucks
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "<f12>") 'count-lines-region)
 (global-set-key (kbd "C-`") 'toggle-truncate-lines)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
-(global-set-key [M-left] 'windmove-left)          ; move to left windnow
-(global-set-key [M-right] 'windmove-right)        ; move to right window
-(global-set-key [M-up] 'windmove-up)              ; move to upper window
-(global-set-key [M-down] 'windmove-down)          ; move to downer window
+(global-set-key [M-left] 'windmove-left)
+(global-set-key [M-right] 'windmove-right)
+(global-set-key [M-up] 'windmove-up)
+(global-set-key [M-down] 'windmove-down)
 
 ;;; Minor modes
 (column-number-mode t) ; View column numbers in the mode line
@@ -39,17 +40,14 @@
 (global-subword-mode t) ; Jump between words intelligently
 (mouse-avoidance-mode 'exile) ; Banish mouse when mark is near
 (tool-bar-mode 0) ; Turn off stupid toolbar
+(menu-bar-mode 0) ; Turn off stupid toolbar
 (set-scroll-bar-mode nil) ; Turn off scrollbars
 (winner-mode t) ; Revert to previous window configuration
-
-;;; Only do certain things if it's graphical
-(if (display-graphic-p)
-    (progn (global-hl-line-mode t))) ; Highlight the line the cursor is on
+(if (display-graphic-p) (progn (global-hl-line-mode t))) ; Highlight line
 
 ;;; Turning on ido mode!
 (require 'ido)
 (ido-mode t)
-(setq ido-auto-merge-work-directories-length -1) ; To create new files
 
 ;;; Matching parentheses customizations
 (show-paren-mode t)
