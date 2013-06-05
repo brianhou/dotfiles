@@ -57,12 +57,18 @@
 (set-face-attribute 'show-paren-match-face nil :weight 'ultra-bold)
 
 ;;; Adding things to auto-mode-alist
-;; Make custom bash files show up in sh-mode
-(let ((custom-bash-files '((".bash_aliases" . sh-mode)
-                           (".private_bash_aliases" . sh-mode))))
-  (setq-default auto-mode-alist (append auto-mode-alist custom-bash-files)))
+;; custom bash files = sh-mode
+(add-to-list 'auto-mode-alist '("\\.[a-zA-Z0-9_]*bash_aliases\\'" . sh-mode))
 ;; .text = markdown-mode
 (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+;; Special Ruby files
+(let ((ruby-file-types '(("\\.rake\\'" . ruby-mode)
+                         ("Rakefile\\'" . ruby-mode)
+                         ("\\.gemspec\\'" . ruby-mode)
+                         ("\\.ru\\'" . ruby-mode)
+                         ("Gemfile\\'" . ruby-mode)
+                         ("Guardfile\\'" . ruby-mode))))
+  (setq-default auto-mode-alist (append auto-mode-alist ruby-file-types)))
 
 ;; Lisp indentation things
 (put 'setq 'lisp-indent-function 'defun)
@@ -71,23 +77,46 @@
 (put 'if 'lisp-indent-function nil)
 
 ;;; Adding hooks
-(add-hook 'markdown-mode-hook 'visual-line-mode)
+(add-hook 'text-mode-hook 'visual-line-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+(add-hook 'term-mode-hook (lambda () (setq linum-mode nil)))
+
 (add-hook 'java-mode-hook
   (lambda ()
     (setq compile-command "javac -g") ; Compile with javac -g
     (local-set-key (kbd "C-x C-e") 'compile)))
 (add-hook 'c-mode-hook
   (lambda ()
-    (setq compile-command "gcc -g -o") ; Compile with gcc -g -o
+    (setq compile-command "gcc -g") ; Compile with gcc -g
     (local-set-key (kbd "C-x C-e") 'compile)))
-(add-hook 'term-mode-hook
-  (lambda ()
-    (setq linum-mode nil)))
+
+;;; Customize some built-in functions
+(defun zap-up-to-char (arg char)
+  "Kill up to, but not including ARGth occurrence of CHAR. Case is ignored if
+`case-fold-search' is non-nil in the current buffer. Goes backward if ARG is
+negative; error if CHAR not found. Ignores CHAR at point."
+  (interactive "p\ncZap up to char: ")
+  (let ((direction (if (>= arg 0) 1 -1)))
+    (kill-region (point)
+                 (progn
+                   (forward-char direction)
+                   (unwind-protect
+                       (search-forward (char-to-string char) nil nil arg)
+                     (backward-char direction))
+                   (point)))))
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+
+(defadvice yank (around yank-and-indent)
+  "Indent after yanking."
+  (let ((point-before (point)))
+    ad-do-it
+    (indent-region point-before (point))))
+(ad-activate 'yank)
 
 ;;; Set persistent *scratch* buffer (todo file at ~/.todo) based off
 ;;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
 ;;; and http://stackoverflow.com/a/358740
+(require 'markdown-mode)
 (setq initial-major-mode 'markdown-mode) ; set *scratch* mode to markdown
 (defadvice kill-buffer (around bury-scratch activate)
   "Bury *scratch* buffer instead of killing it."
@@ -135,54 +164,5 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 (setq yas-prompt-functions '(yas/ido-prompt yas/completing-prompt))
-
-(defun zap-up-to-char (arg char)
-  "Kill up to, but not including ARGth occurrence of CHAR. Case is ignored if
-`case-fold-search' is non-nil in the current buffer. Goes backward if ARG is
-negative; error if CHAR not found. Ignores CHAR at point."
-  (interactive "p\ncZap up to char: ")
-  (let ((direction (if (>= arg 0) 1 -1)))
-    (kill-region (point)
-                 (progn
-                   (forward-char direction)
-                   (unwind-protect
-                       (search-forward (char-to-string char) nil nil arg)
-                     (backward-char direction))
-                   (point)))))
-(global-set-key (kbd "M-z") 'zap-up-to-char)
-
-(defadvice message (before test-symbol activate)
-  "Includes timestamp of message."
-  (if (not (string-equal (ad-get-arg 0) "%s%s"))
-      (let ((deactivate-mark nil))
-        (with-current-buffer "*Messages*"
-          (goto-char (point-max))
-          (if (not (bolp)) (newline))
-          (insert (format-time-string "[%T] "))))))
-
-(defadvice yank (around yank-and-indent)
-  "Indents after yanking."
-  (let ((point-before (point)))
-    ad-do-it
-    (indent-region point-before (point))))
-(ad-activate 'yank)
-
-(defun kill-line-and-one-space (&optional ARG)
-  "Kill a line. Leave one space."
-  (defun multiple-spaces ()
-    "If both the character at point and one of the characters
-     around it are spaces, return true."
-    (let ((space 32))
-      (and (char-equal (char-after) space)
-           (or (char-equal (char-before) space)
-               (char-equal (char-after (+ (point) 1)) space)))))
-  (interactive)
-  (let ((one-space (and (not (bolp)) (eolp))))
-    (kill-line ARG)
-    (if (and one-space (multiple-spaces))
-        (just-one-space 1))))
-(global-set-key (kbd "C-k") 'kill-line-and-one-space)
-
-(load "xscheme")
 
 (message "Successfully loaded personal settings.")
