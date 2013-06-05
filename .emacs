@@ -36,7 +36,6 @@
 
 ;;; Minor modes
 (column-number-mode t) ; View column numbers in the mode line
-(global-linum-mode t) ; Show line numbers
 (global-subword-mode t) ; Jump between words intelligently
 (mouse-avoidance-mode 'exile) ; Banish mouse when mark is near
 (tool-bar-mode 0) ; Turn off stupid toolbar
@@ -79,7 +78,6 @@
 ;;; Adding hooks
 (add-hook 'text-mode-hook 'visual-line-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
-(add-hook 'term-mode-hook (lambda () (setq linum-mode nil)))
 
 (add-hook 'java-mode-hook
   (lambda ()
@@ -112,6 +110,16 @@ negative; error if CHAR not found. Ignores CHAR at point."
     ad-do-it
     (indent-region point-before (point))))
 (ad-activate 'yank)
+
+(defun goto-line-with-feedback ()
+  "Temporarily turn on linum mode when using goto-line"
+  (interactive)
+  (unwind-protect
+      (progn
+        (linum-mode 1)
+        (call-interactively 'goto-line))
+    (linum-mode -1)))
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
 
 ;;; Set persistent *scratch* buffer (todo file at ~/.todo) based off
 ;;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
