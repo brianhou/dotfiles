@@ -108,15 +108,30 @@
 (push 'save-todo kill-emacs-hook) ; Save before killing
 (load-todo) ; Run load-todo function at startup
 
-;;; Setting up some cool packages
+;;; Packages on packages on packages...
+
+;; ace-jump-mode
+(require 'ace-jump-mode)
+(autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(autoload 'ace-jump-mode-pop-mark "ace-jump-mode" "Ace jump back" t)
+(eval-after-load "ace-jump-mode" '(ace-jump-mode-enable-mark-sync))
+(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+(setq ace-jump-mode-gray-background nil)
+
+;; expand-region.el
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+
+;; multiple-cursors.el
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
 (global-set-key (kbd "C-c <M-right>") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-c <M-left>") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
 (global-set-key (kbd "C-c a") 'mc/mark-all-in-region)
-(require 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
+
+;; yasnippet
 (require 'yasnippet)
 (yas-global-mode 1)
 (setq yas-prompt-functions '(yas/ido-prompt yas/completing-prompt))
