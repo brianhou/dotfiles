@@ -1,14 +1,9 @@
-(defun add-to-loadpath (&rest dirs) "Add dirs to load-path"
-  (dolist (dir dirs load-path) (add-to-list 'load-path dir)))
-
-;;; Adding packages to load path
-(add-to-loadpath "~/.emacs.d"
-                 "~/.emacs.d/multiple-cursors.el"
-                 "~/.emacs.d/expand-region.el"
-                 "~/.emacs.d/yasnippet")
+(add-to-list 'load-path "~/emacs.d")
+(require 'package)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(package-initialize)
 
 ;;; Adding themes (solarized)
-(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
 (load-theme 'solarized-dark t)
 
 ;;; Customizing variables
