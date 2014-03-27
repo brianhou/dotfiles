@@ -304,11 +304,11 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 ;; multiple-cursors.el
-(global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
-(global-set-key (kbd "C-c <M-right>") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-c <M-left>") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c .") 'mc/mark-more-like-this-extended)
 (global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-c a") 'mc/mark-all-in-region)
+(global-set-key (kbd "C-c ?") 'mc/mark-all-in-region)
+(global-set-key (kbd "C-c a") 'mc/mark-all-dwim)
+(global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
 
 ;; yasnippet
 (yas-global-mode 1)
