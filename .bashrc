@@ -110,6 +110,11 @@ if ! shopt -oq posix; then
 fi
 
 ### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
+PATH=$PATH:/usr/local/heroku/bin # Added by the Heroku Toolbelt
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+PATH=$PATH:$HOME/bin # Add ~/bin to PATH
+PATH=/opt/llvm/bin:$PATH # For Clang things
+export PYTHONSTARTUP=~/.pyprompt
+export EDITOR="/usr/bin/emacs -nw"
 
 fortune | cowsay -f tux
