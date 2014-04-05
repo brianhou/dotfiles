@@ -7,9 +7,9 @@
 (load-theme 'solarized-dark t)
 
 ;; Hide bars
-(scroll-bar-mode 0)
-(tool-bar-mode 0)
 (menu-bar-mode 0)
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
 
 ;;; end eye candy
 
@@ -29,6 +29,7 @@
 (if (display-graphic-p) (global-hl-line-mode t)) ; Highlight line
 (global-git-gutter-mode t) ; Show git diff in gutter
 (setq-default indicate-buffer-boundaries 'left indicate-empty-lines t)
+(fancy-narrow-mode) ; prettier narrowing
 
 ;;; Customizing variables
 (setq
