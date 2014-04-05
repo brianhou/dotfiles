@@ -255,6 +255,9 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 
 (define-key evil-ex-map "b" 'ido-switch-buffer) ; C-x b?
 
+(define-key evil-motion-state-map "j" "gj")
+(define-key evil-motion-state-map "k" "gk")
+
 (define-key evil-normal-state-map (kbd "SPC") 'ace-jump-mode)
 (define-key evil-normal-state-map (kbd "C-w") 'kill-region)
 (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
