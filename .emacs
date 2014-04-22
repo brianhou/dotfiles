@@ -107,6 +107,7 @@
   (lambda ()
     (setq compile-command "g++ -std=c++11 -g") ; Compile with g++ -g
     (local-set-key (kbd "C-x C-e") 'compile)))
+(add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
 
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-decl-scan)
