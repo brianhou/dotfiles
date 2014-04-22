@@ -229,12 +229,17 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 ;;; Set persistent TODO-BUFFER (todo file at ~/.todo) based off
 ;;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
 ;;; and http://stackoverflow.com/a/358740
-(defvar TODO-FILENAME "~/.todo" "to-do file location")
+(defvar TODO-FILENAME "~/.todo/todo" "to-do file location")
 (defvar TODO-BUFFER "*todo*" "buffer to load into")
 (defadvice kill-buffer (around bury-scratch activate)
   "Bury TODO-BUFFER instead of killing it."
   (let ((buffer-to-kill (ad-get-arg 0)))
     (if (equal buffer-to-kill TODO-BUFFER) (bury-buffer) ad-do-it)))
+(defadvice save-buffer (around save-todo activate)
+  "Write contents of *todo* to TODO-FILENAME"
+  (let ((buffer-to-save (buffer-name (current-buffer))))
+    (if (equal buffer-to-save TODO-BUFFER)
+        (write-region nil nil TODO-FILENAME) ad-do-it)))
 (defun load-todo ()
   "Load the contents of TODO-FILENAME into the TODO-BUFFER."
   (with-current-buffer (get-buffer-create TODO-BUFFER)
