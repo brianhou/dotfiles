@@ -4,7 +4,18 @@
 
 ;; Adding themes (solarized)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
-(load-theme 'solarized-dark t)
+(defun colorize-paren ()
+  "Matching parentheses customizations."
+  (show-paren-mode t)
+  (setq-default show-paren-delay 0)
+  (set-face-foreground 'show-paren-match-face "#FFF")
+  (set-face-attribute 'show-paren-match-face nil :weight 'ultra-bold))
+(defun colorize-frame (f)
+  (with-selected-frame f
+    (when (window-system f) (load-theme 'solarized-dark t) (colorize-paren))))
+(if (daemonp)
+    (add-hook 'after-make-frame-functions 'colorize-frame)
+    (colorize-frame (car (cadr (current-frame-configuration)))))
 
 ;; Hide bars
 (menu-bar-mode 0)
@@ -61,12 +72,6 @@
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-c w") 'delete-trailing-whitespace)
 (windmove-default-keybindings 'meta) ; M-<arrows>
-
-;;; Matching parentheses customizations
-(show-paren-mode t)
-(setq-default show-paren-delay 0)
-(set-face-foreground 'show-paren-match-face "#FFF")
-(set-face-attribute 'show-paren-match-face nil :weight 'ultra-bold)
 
 ;;; Adding things to auto-mode-alist
 ;; Open custom bash files with sh-mode
