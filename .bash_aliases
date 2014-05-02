@@ -46,4 +46,4 @@ function _jump {
     local curr=${COMP_WORDS[COMP_CWORD]}
     COMPREPLY=( $(compgen -W "$( \ls $MARKPATH )" -- $curr) )
 }
-complete -o default -o nospace -F _jump jump unmark
+complete -o default -o nospace -F _jump jump j unmark
