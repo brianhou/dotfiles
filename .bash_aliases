@@ -10,9 +10,17 @@ function lsR {
     ls -R $1!(venv) # ignores venv folder
 }
 
+# emacs stuff
+function start-emacs {
+    emacs --daemon
+}
+function kill-emacs {
+    emacsclient -e "(kill-emacs)"
+}
+alias e='emacsclient -c'
+alias en='emacsclient -n'
+
 # Alias definitions.
-alias e='emacs'
-alias en='emacs -nw'
 alias v='vim'
 alias rm='rm -i'
 alias g='git'

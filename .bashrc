@@ -115,6 +115,6 @@ PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 PATH=$PATH:$HOME/bin # Add ~/bin to PATH
 PATH=/opt/llvm/bin:$PATH # For Clang things
 export PYTHONSTARTUP=~/.pyprompt
-export EDITOR="/usr/bin/emacs -nw"
+export EDITOR="emacsclient -n"
 
 fortune | cowsay -f tux
