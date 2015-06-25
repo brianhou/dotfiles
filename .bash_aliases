@@ -18,7 +18,7 @@ function kill-emacs {
     emacsclient -e "(kill-emacs)"
 }
 alias e='emacsclient -c'
-alias en='emacsclient -n'
+alias en='emacs -nw'
 
 # Alias definitions.
 alias v='vim'
@@ -26,6 +26,7 @@ alias rm='rm -i'
 alias g='git'
 alias octave='octave --persist'
 alias open='xdg-open'
+alias node='nodejs'
 
 # easily remap keyboard for right control. run again to reverse.
 # in other words, if right control isn't acting as expected, remap.
@@ -42,7 +43,10 @@ function mark {
     mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
 }
 function unmark {
-    rm -i "$MARKPATH/$1"
+    for mark in "$@"
+    do
+        rm -i "$MARKPATH/$mark"
+    done
 }
 function marks {
     ls -l $MARKPATH | tr -s ' ' | cut -d ' ' -f 9- | sed s,$HOME,~,';1d;s/ -/\t-/;s/^/  /'
