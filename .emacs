@@ -117,6 +117,14 @@
     (setq compile-command "g++ -std=c++11 -g") ; Compile with g++ -g
     (local-set-key (kbd "C-x C-e") 'compile)))
 (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
+(defun TeX-word-count ()
+  (interactive)
+  (let ((command "texcount -sum -1 ")
+        (file (buffer-name)))
+    (shell-command (concat command file))))
+(add-hook 'LaTeX-mode-hook
+  (lambda ()
+    (local-set-key (kbd "C-c C-w") 'TeX-word-count)))
 
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-decl-scan)
