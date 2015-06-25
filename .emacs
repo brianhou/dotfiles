@@ -34,13 +34,14 @@
 ;;; Minor modes
 (column-number-mode t) ; View column numbers in the mode line
 (global-subword-mode t) ; Jump between words intelligently
-(mouse-avoidance-mode 'exile) ; Banish mouse when mark is near
+; (mouse-avoidance-mode 'exile) ; Banish mouse when mark is near
 (winner-mode t) ; Revert to previous window configuration
 (ido-mode t) ; Turning on ido mode!
-(if (display-graphic-p) (global-hl-line-mode t)) ; Highlight line
+; (if (display-graphic-p) (global-hl-line-mode t)) ; Highlight line
 (global-git-gutter-mode t) ; Show git diff in gutter
 (setq-default indicate-buffer-boundaries 'left indicate-empty-lines t)
-(fancy-narrow-mode) ; prettier narrowing
+; (fancy-narrow-mode) ; buggy, prettier narrowing
+; (hs-minor-mode t)
 
 ;;; Customizing variables
 (setq
@@ -54,6 +55,7 @@
   recenter-positions '(top middle bottom) ; For C-l and M-r
   next-screen-context-lines 2
   indent-tabs-mode nil ; No tabs
+  c-basic-offset 4
   echo-keystrokes 0.3
   kill-whole-line 1)
 (require 'saveplace)
@@ -61,6 +63,7 @@
 (put 'upcase-region 'disabled nil) ; C-x C-u
 (put 'downcase-region 'disabled nil) ; C-x C-l
 (put 'narrow-to-region 'disabled nil) ; C-x n n
+(put 'suspend-frame 'disabled t)
 
 ;;; Custom key bindings
 (global-set-key (kbd "RET") 'newline-and-indent)
@@ -71,6 +74,7 @@
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-c w") 'delete-trailing-whitespace)
+(global-set-key (kbd "M-RET") 'eshell)
 (windmove-default-keybindings 'meta) ; M-<arrows>
 
 ;;; Adding things to auto-mode-alist
@@ -143,7 +147,9 @@
                  (name . "\*Occur\*")
                  (name . "\*Messages\*")))
      ("dired" (mode . dired-mode))
-     ("config" (filename . ".emacs"))
+     ("todo" (or (filename . "\\.todo/.*")
+                 (name . "\*todo\*")))
+     ("config" (filename . "\\.emacs"))
      ("magit" (or (mode . magit-mode) (name . "\*magit"))))))
 
 (defun ibuffer-ido-find-file ()
@@ -229,7 +235,8 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 
 (defun refresh-file ()
   (interactive)
-  (revert-buffer t (not (buffer-modified-p)) t))
+  (revert-buffer t (not (buffer-modified-p)) t)
+  (font-lock-fontify-buffers))
 (global-set-key (kbd "<f5>") 'refresh-file)
 
 ;;; Set persistent TODO-BUFFER (todo file at ~/.todo) based off
@@ -297,6 +304,7 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
                   ,(rx (or "}" "]" "end"))                  ; Block end
                   ,(rx (or "#" "=begin"))                   ; Comment start
                   ruby-forward-sexp nil)))
+(add-hook 'prog-mode-hook #'hs-minor-mode)
 
 ;; jedi
 (add-hook 'python-mode-hook 'jedi:setup)
@@ -372,5 +380,9 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
   TeX-save-query nil
   TeX-command-force "LaTeX"
   TeX-install-font-lock 'tex-font-setup)
+
+;; regexp-builder
+(require 're-builder)
+(setq reb-re-syntax 'string)
 
 (message "Successfully loaded personal settings.")
