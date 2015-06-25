@@ -176,30 +176,35 @@
     (ibuffer-switch-to-saved-filter-groups "default")
     (local-set-key (kbd "C-x C-f") 'ibuffer-ido-find-file)))
 
-(defun toggle-window-split ()
+(defun toggle-frame-split ()
   "Rotate from horizontal/vertical split to the opposite."
   (interactive)
-  (if (= (count-windows) 2)
-      (let*
-          ((this-buffer (window-buffer))
-           (this-edges (window-edges))
-           (next-buffer (window-buffer (next-window)))
-           (next-edges (window-edges (next-window)))
-           (this-2nd
-            (not (and (<= (car this-edges) (car next-edges)) ; left
-                      (<= (cadr this-edges) (cadr next-edges))))) ; top
-           (splitter
-            (if (= (car this-edges) (car next-edges))
-                'split-window-horizontally 'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-buffer)
-          (set-window-buffer (next-window) next-buffer)
-          (select-window first-win)
-          (if this-2nd (other-window 1))))))
-(global-set-key (kbd "C-c r") 'toggle-window-split)
+  (unless (= (count-windows) 2)
+    (error "Can only toggle a window split in two"))
+  (let*
+      ((this-buffer (window-buffer))
+       (this-edges (window-edges))
+       (this-window-point (window-point))
+       (next-buffer (window-buffer (next-window)))
+       (next-edges (window-edges (next-window)))
+       (next-window-point (window-point (next-window)))
+       (this-2nd
+        (not (and (<= (car this-edges) (car next-edges)) ; left
+                  (<= (cadr this-edges) (cadr next-edges))))) ; top
+       (splitter
+        (if (= (car this-edges) (car next-edges))
+            'split-window-horizontally 'split-window-vertically)))
+    (delete-other-windows)
+    (let ((first-win (selected-window)))
+      (funcall splitter)
+      (if this-2nd (other-window 1))
+      (set-window-buffer (selected-window) this-buffer)
+      (set-window-point (selected-window) this-window-point)
+      (set-window-buffer (next-window) next-buffer)
+      (set-window-point (next-window) next-window-point)
+      (select-window first-win)
+      (if this-2nd (other-window 1)))))
+(global-set-key (kbd "C-c r") 'toggle-frame-split)
 
 (defun eval-and-replace ()
   "Replace the preceding sexp with its value."
