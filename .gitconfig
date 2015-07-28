@@ -1,0 +1,31 @@
+[user]
+	name = Brian Hou
+	email = brian.hou@live.com
+[core]
+	editor = vim
+	excludesfile = /home/brian/.global_gitignore
+	autocrlf = input
+	attributesfile = /home/brian/.gitattributes
+[merge]
+	tool = meld
+[color]
+	ui = true
+[alias]
+	s = status
+	c = commit
+	b = branch
+	o = checkout
+	d = diff
+	l = log -p
+	f = fetch
+	p = push
+	lsd = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	g = grep --break --heading
+[push]
+	default = current
+[help]
+	autocorrect = 10
+[diff "zip"]
+	textconv = unzip -v
+[grep]
+	lineNumber = true
