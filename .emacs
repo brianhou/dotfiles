@@ -346,6 +346,11 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 (global-set-key (kbd "C-c a") 'mc/mark-all-dwim)
 (global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
 
+;; fold-this
+(add-to-list 'load-path "~/.emacs.d/fold-this.el") ; use custom version
+(autoload 'fold-active-region-lines "fold-this" "Folding lines of code" t)
+(define-key evil-normal-state-map (kbd "z f") 'fold-active-region-lines)
+
 ;; yasnippet
 (yas-global-mode 1)
 (setq yas-prompt-functions '(yas/ido-prompt yas/completing-prompt))
