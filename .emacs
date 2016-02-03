@@ -47,6 +47,8 @@
 (setq
   inhibit-startup-screen t
   inhibit-startup-buffer-menu t
+  vc-follow-symlinks t
+  safe-local-variable-values '((compilation-read-command))
   python-python-command "python3"
   mouse-wheel-progressive-speed nil)
 (setq-default
@@ -68,7 +70,6 @@
 ;;; Custom key bindings
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "<f10>") 'show-ws-toggle-show-trailing-whitespace)
-(global-set-key (kbd "<f12>") 'count-lines-region)
 (global-set-key (kbd "C-`") 'toggle-truncate-lines)
 (global-set-key (kbd "C-x O") (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -116,14 +117,16 @@
   (lambda ()
     (setq compile-command "g++ -std=c++11 -g") ; Compile with g++ -g
     (local-set-key (kbd "C-x C-e") 'compile)))
+
 (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
-(defun TeX-word-count ()
+(defun TeX-word-count (&optional)
   (interactive)
   (let ((command "texcount -sum -1 ")
         (file (buffer-name)))
     (shell-command (concat command file))))
 (add-hook 'LaTeX-mode-hook
   (lambda ()
+    (local-set-key (kbd "C-x C-e") 'compile)
     (local-set-key (kbd "C-c C-w") 'TeX-word-count)))
 
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
@@ -135,9 +138,11 @@
 
 ;; hippie expand
 (setq hippie-expand-try-functions-list
-  (delete 'try-complete-file-name
-          (delete 'try-complete-file-name-partially
-                  hippie-expand-try-functions-list)))
+  '(try-expand-line
+    try-expand-dabbrev-visible try-expand-dabbrev try-expand-dabbrev-all-buffers
+    try-expand-line-all-buffers try-expand-dabbrev-from-kill)
+  hippie-expand-verbose t
+  hippie-expand-max-buffers 3)
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
 ;;; Ibuffer
@@ -154,11 +159,16 @@
                  (name . "\*Completions\*")
                  (name . "\*Occur\*")
                  (name . "\*Messages\*")))
+     ("tex" (mode . TeX-output-mode))
      ("dired" (mode . dired-mode))
+     ("magit" (or (mode . magit-mode) (name . "\*magit")))
      ("todo" (or (filename . "\\.todo/.*")
                  (name . "\*todo\*")))
      ("config" (filename . "\\.emacs"))
-     ("magit" (or (mode . magit-mode) (name . "\*magit"))))))
+     ("cs61a" (filename . "/coding/cs61a"))
+     ("cs189" (or (filename . "/coding/cs189") (filename . "/teaching/sp16-189")))
+     ("research" (filename . "/research/"))
+     )))
 
 (defun ibuffer-ido-find-file ()
   "Like `ido-find-file', but default to the directory of the buffer at point."
@@ -249,7 +259,7 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 (defun refresh-file ()
   (interactive)
   (revert-buffer t (not (buffer-modified-p)) t)
-  (font-lock-fontify-buffers))
+  (font-lock-fontify-buffer))
 (global-set-key (kbd "<f5>") 'refresh-file)
 
 ;;; Set persistent TODO-BUFFER (todo file at ~/.todo) based off
@@ -289,6 +299,9 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 
 (define-key evil-motion-state-map "j" "gj")
 (define-key evil-motion-state-map "k" "gk")
+(define-key evil-motion-state-map "$" "g$")
+(define-key evil-motion-state-map "^" "g^")
+(define-key evil-motion-state-map "0" "g0")
 
 (define-key evil-normal-state-map (kbd "SPC") 'ace-jump-mode)
 (define-key evil-normal-state-map (kbd "C-w") 'kill-region)
@@ -350,6 +363,7 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 (add-to-list 'load-path "~/.emacs.d/fold-this.el") ; use custom version
 (autoload 'fold-active-region-lines "fold-this" "Folding lines of code" t)
 (define-key evil-normal-state-map (kbd "z f") 'fold-active-region-lines)
+(setq fold-this-persistent-folds t)
 
 ;; yasnippet
 (yas-global-mode 1)
