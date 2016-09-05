@@ -1,0 +1,55 @@
+(setq package-list '(
+  buffer-move
+  csv-mode
+  evil
+  goto-chg
+  undo-tree
+  evil-nerd-commenter
+  expand-region
+  git-gutter
+  goto-chg
+  helm-spotify
+  multi
+  helm
+  helm-core
+  async
+  popup
+  async
+  iedit
+  magit
+  magit-popup
+  dash
+  async
+  git-commit
+  with-editor
+  dash
+  async
+  dash
+  with-editor
+  dash
+  async
+  dash
+  async
+  magit-popup
+  dash
+  async
+  markdown-mode
+  multi
+  multiple-cursors
+  popup
+  rainbow-delimiters
+  rainbow-mode
+  smex
+  spotify
+  undo-tree
+  with-editor
+  dash
+  async
+  yasnippet))
+
+(unless package-archive-contents
+  (or (file-exists-p package-user-dir) (package-refresh-contents)))
+
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
