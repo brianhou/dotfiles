@@ -24,6 +24,11 @@ shopt -s checkwinsize
 # match all files and zero or more directories and subdirectories.
 #shopt -s globstar
 
+# Git autocompletion
+if [ -f ~/.git-completion.bash ]; then
+    source ~/.git-completion.bash
+fi
+
 # Adding git functions from http://amatsukawa.com/git-branch-command-line.html
 if [ -f ~/.gitprompt.sh ]; then
     . ~/.gitprompt.sh
@@ -65,15 +70,6 @@ else
 fi
 unset color_prompt force_color_prompt
 
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
-
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -109,12 +105,19 @@ if ! shopt -oq posix; then
   fi
 fi
 
-### Added by the Heroku Toolbelt
-PATH=$PATH:/usr/local/heroku/bin # Added by the Heroku Toolbelt
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-PATH=$PATH:$HOME/bin # Add ~/bin to PATH
-PATH=/opt/llvm/bin:$PATH # For Clang things
-export PYTHONSTARTUP=~/.pyprompt
 export EDITOR="vim"
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    ### Added by the Heroku Toolbelt
+    PATH=$PATH:/usr/local/heroku/bin # Added by the Heroku Toolbelt
+    PATH=$PATH:$HOME/bin # Add ~/bin to PATH
+    PATH=/opt/llvm/bin:$PATH # For Clang things
+    export PYTHONSTARTUP=~/.pyprompt
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # pyenv
+    export PYENV_ROOT=/usr/local/var/pyenv
+    if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+    if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+fi
 
 fortune | cowsay -f tux

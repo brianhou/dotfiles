@@ -10,29 +10,37 @@ function lsR {
     ls -R $1!(venv) # ignores venv folder
 }
 
-# emacs stuff
+# editor stuff
 function start-emacs {
     emacs --daemon
 }
 function kill-emacs {
     emacsclient -e "(kill-emacs)"
 }
-alias e='emacsclient -c'
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    alias e='emacsclient -c'
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    alias e='emacs'
+fi
 alias en='emacs -nw'
+alias v='vim'
 
 # Alias definitions.
-alias v='vim'
 alias rm='rm -i'
 alias g='git'
-alias octave='octave --persist'
-alias open='xdg-open'
-alias node='nodejs'
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    alias octave='octave --persist'
+    alias open='xdg-open'
+    alias node='nodejs'
 
 # easily remap keyboard for right control. run again to reverse.
 # in other words, if right control isn't acting as expected, remap.
 function remap {
     xmodmap -e 'remove Control = Control_R' -e 'keysym Control_R = Menu' -e 'keysym Menu = Control_R' -e 'add Control = Control_R'
 }
+fi
+
+__git_complete g __git_main
 
 # quickly navigate your filesystem from the command-line
 export MARKPATH=$HOME/.marks
@@ -49,7 +57,11 @@ function unmark {
     done
 }
 function marks {
-    ls -l $MARKPATH | tr -s ' ' | cut -d ' ' -f 9- | sed s,$HOME,~,';1d;s/ -/\t-/;s/^/  /'
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        ls -l $MARKPATH | tr -s ' ' | cut -d ' ' -f 9- | sed s,$HOME,~,';1d;s/ -/\t-/;s/^/  /'
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        ls -l $MARKPATH | tr -s ' ' | cut -d ' ' -f 9- | sed s,$HOME,~,';1d;s/ -/	-/;s/^/  /'
+    fi
 }
 alias j="jump"
 

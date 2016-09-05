@@ -1,3 +1,5 @@
+# TODO: Figure out how to use the built-in git-prompt.sh
+
 # Adding git functions from http://amatsukawa.com/git-branch-command-line.html
 parse_git_branch () {
     if git rev-parse --git-dir >/dev/null 2>&1
