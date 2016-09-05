@@ -1,4 +1,5 @@
-(add-to-list 'load-path "~/.emacs.d")
+(when (not (eq system-type 'darwin))
+  (add-to-list 'load-path "~/.emacs.d"))
 
 ;;; Eye candy
 
@@ -12,10 +13,15 @@
   (set-face-attribute 'show-paren-match-face nil :weight 'ultra-bold))
 (defun colorize-frame (f)
   (with-selected-frame f
-    (when (window-system f) (load-theme 'solarized-dark t) (colorize-paren))))
+    (when (window-system f)
+      (load-theme (if (eq system-type 'darwin) 'solarized 'solarized-dark) t) (colorize-paren))))
+(when (eq system-type 'darwin)
+  (setq frame-background-mode 'dark)) ; for solarized-dark
 (if (daemonp)
     (add-hook 'after-make-frame-functions 'colorize-frame)
     (colorize-frame (car (cadr (current-frame-configuration)))))
+(when (eq system-type 'darwin)
+  (enable-theme 'solarized))
 
 ;; Hide bars
 (menu-bar-mode 0)
@@ -100,6 +106,10 @@
 (put 'add-hook 'lisp-indent-function 'defun)
 (put 'if 'lisp-indent-function nil)
 
+;; CS 61A things
+(add-to-list 'auto-mode-alist '("\\.logic\\'" . scheme-mode))
+(add-hook 'scheme-mode-hook #'rainbow-delimiters-mode)
+
 ;;; Adding hooks
 (add-hook 'text-mode-hook 'visual-line-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
@@ -135,6 +145,21 @@
   '(progn
      (define-key haskell-mode-map (kbd "C-,") 'haskell-move-nested-left)
      (define-key haskell-mode-map (kbd "C-.") 'haskell-move-nested-right)))
+
+(define-minor-mode evil-org-mode
+  "Buffer local minor mode for evil-org"
+  :init-value nil
+  :lighter " EvilOrg"
+  :keymap (make-sparse-keymap)
+  :group 'evil-org)
+;; (add-hook 'org-mode-hook 'evil-org-mode)
+;; (evil-define-key 'normal evil-org-mode-map
+;;   "{" 'org-backward-element
+;;   "}" 'org-forward-element)
+(add-hook 'org-mode-hook
+  (lambda ()
+    (setq paragraph-start "\\|[    ]*$"
+          paragraph-separate "[     ]*$")))
 
 ;; hippie expand
 (setq hippie-expand-try-functions-list
@@ -279,7 +304,7 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 (defun load-todo ()
   "Load the contents of TODO-FILENAME into the TODO-BUFFER."
   (with-current-buffer (get-buffer-create TODO-BUFFER)
-    (markdown-mode)
+    (org-mode)
     (insert-file-contents TODO-FILENAME)))
 (defun save-todo ()
   "Save the contents of the TODO-BUFFER into TODO-FILENAME."
@@ -305,12 +330,14 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 
 (define-key evil-normal-state-map (kbd "SPC") 'ace-jump-mode)
 (define-key evil-normal-state-map (kbd "C-w") 'kill-region)
+(define-key evil-normal-state-map (kbd "C-a") 'move-beginning-of-line)
 (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
 (define-key evil-normal-state-map (kbd "C-y") 'yank)
 (define-key evil-normal-state-map (kbd "=") 'er/expand-region)
 
 (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
 (define-key evil-insert-state-map (kbd "C-w") 'kill-region)
+(define-key evil-insert-state-map (kbd "C-a") 'move-beginning-of-line)
 (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
 (define-key evil-insert-state-map (kbd "C-y") 'yank)
 (define-key evil-insert-state-map (kbd "C-d") 'delete-char)
@@ -319,6 +346,7 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 
 (define-key evil-visual-state-map (kbd "SPC") 'ace-jump-mode)
 (define-key evil-visual-state-map (kbd "C-w") 'kill-region)
+(define-key evil-visual-state-map (kbd "C-a") 'move-beginning-of-line)
 (define-key evil-visual-state-map (kbd "C-e") 'move-end-of-line)
 (define-key evil-visual-state-map (kbd "C-y") 'yank)
 (define-key evil-visual-state-map (kbd "=") 'er/expand-region)
@@ -331,17 +359,6 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
                   ,(rx (or "#" "=begin"))                   ; Comment start
                   ruby-forward-sexp nil)))
 (add-hook 'prog-mode-hook #'hs-minor-mode)
-
-;; jedi
-(add-hook 'python-mode-hook 'jedi:setup)
-(eval-after-load 'jedi
-  '(progn
-    (setq
-      jedi:setup-keys t
-      jedi:server-command (list "python3" jedi:server-script)
-      jedi:tooltip-method nil
-      jedi:complete-on-dot t
-      jedi:get-in-function-call-delay 0)))
 
 ;; ace-jump-mode
 (add-to-list 'load-path "~/.emacs.d/ace-jump-mode") ; use custom version
@@ -379,20 +396,22 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 ;; magit
 (global-set-key (kbd "<f2>") 'magit-status)
 (setq magit-diff-use-overlays nil)
-(eval-after-load 'magit
-  '(progn
-     (set-face-foreground 'magit-diff-add "green")
-     (set-face-foreground 'magit-diff-del "red")
-     (when (not window-system)
-       (set-face-background 'magit-item-highlight "black"))))
+;; (eval-after-load 'magit
+;;   '(progn
+;;      (set-face-foreground 'magit-diff-add "green")
+;;      (set-face-foreground 'magit-diff-del "red")
+;;      (when (not window-system)
+;;        (set-face-background 'magit-item-highlight "black"))))
 
 ;; undo-tree
 (global-undo-tree-mode)
 
 ;; spotify!
-(global-set-key (kbd "<f11>") 'spotify-playpause)
-(global-set-key (kbd "<C-f11>") 'spotify-next)
-(spotify-enable-song-notifications)
+(when (not (eq system-type 'darwin))
+  ; "Not implemented for this platform" error on Mac...
+  (global-set-key (kbd "<f11>") 'spotify-playpause)
+  (global-set-key (kbd "<C-f11>") 'spotify-next)
+  (spotify-enable-song-notifications))
 
 ;; smex
 (global-set-key (kbd "<f6>") 'smex)
@@ -416,5 +435,21 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 ;; regexp-builder
 (require 're-builder)
 (setq reb-re-syntax 'string)
+
+(defun eshell-clear-buffer ()
+  "Clear terminal"
+  (interactive)
+  (let ((inhibit-read-only t))
+    (erase-buffer)
+    (eshell-send-input)))
+(add-hook 'eshell-mode-hook
+      '(lambda()
+          (local-set-key (kbd "C-l") 'eshell-clear-buffer)))
+
+(when (eq system-type 'darwin)
+  (setq
+    mac-command-modifier 'meta
+    mac-option-modifier nil))
+
 
 (message "Successfully loaded personal settings.")
