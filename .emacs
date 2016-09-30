@@ -36,7 +36,7 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 (setq package-enable-at-startup nil)
-(load-file ".emacs-packages")
+(load-file "~/.emacs-packages")
 
 ;;; Minor modes
 (column-number-mode t) ; View column numbers in the mode line

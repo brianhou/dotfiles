@@ -14,7 +14,7 @@ function git_color {
     then
 	echo ""
     else
-	if [[ "$STATUS" != *'working directory clean'* ]]
+	if [[ "$STATUS" != *'working'*'clean'* ]]
 	then
 	    echo -e '\e[0;31m'		# red if need to commit
 	else
