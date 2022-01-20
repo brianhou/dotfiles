@@ -1,16 +1,16 @@
-(when (not (eq system-type 'darwin))
-  (add-to-list 'load-path "~/.emacs.d"))
+;; package management
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(package-initialize)
+(setq package-enable-at-startup nil)
 
 ;;; Eye candy
 
 ;; Adding themes (solarized)
-(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized")
 (defun colorize-paren ()
   "Matching parentheses customizations."
   (show-paren-mode t)
-  (setq-default show-paren-delay 0)
-  (set-face-foreground 'show-paren-match-face "#FFF")
-  (set-face-attribute 'show-paren-match-face nil :weight 'ultra-bold))
+  (setq-default show-paren-delay 0))
 (defun colorize-frame (f)
   (with-selected-frame f
     (when (window-system f)
@@ -31,11 +31,6 @@
 ;;; end eye candy
 
 ;; package management
-(require 'package)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(package-initialize)
-(setq package-enable-at-startup nil)
 (load-file "~/.emacs-packages")
 
 ;;; Minor modes
