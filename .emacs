@@ -3,6 +3,7 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 (setq package-enable-at-startup nil)
+(load-file "~/.emacs-packages")
 
 ;;; Eye candy
 
@@ -30,9 +31,6 @@
 
 ;;; end eye candy
 
-;; package management
-(load-file "~/.emacs-packages")
-
 ;;; Minor modes
 (column-number-mode t) ; View column numbers in the mode line
 (global-subword-mode t) ; Jump between words intelligently
@@ -54,7 +52,6 @@
   python-python-command "python3"
   mouse-wheel-progressive-speed nil)
 (setq-default
-  save-place t ; Remember previous location in file
   fill-column 80
   recenter-positions '(top middle bottom) ; For C-l and M-r
   next-screen-context-lines 2
@@ -63,6 +60,7 @@
   echo-keystrokes 0.3
   kill-whole-line 1)
 (require 'saveplace)
+(save-place-mode t) ; Remember previous location in file
 
 (put 'upcase-region 'disabled nil) ; C-x C-u
 (put 'downcase-region 'disabled nil) ; C-x C-l
