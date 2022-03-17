@@ -28,6 +28,8 @@
   rainbow-delimiters
   rainbow-mode
   smex
+  solarized-theme
+  spotify
   undo-tree
   with-editor
   yasnippet))
