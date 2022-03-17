@@ -8,15 +8,13 @@
 (defun colorize-paren ()
   "Matching parentheses customizations."
   (show-paren-mode t)
-  (setq-default show-paren-delay 0)
-  (set-face-foreground 'show-paren-match-face "#FFF")
-  (set-face-attribute 'show-paren-match-face nil :weight 'ultra-bold))
+  (setq-default show-paren-delay 0))
 (defun colorize-frame (f)
   (with-selected-frame f
     (when (window-system f)
       (load-theme (if (eq system-type 'darwin) 'solarized 'solarized-dark) t) (colorize-paren))))
 (when (eq system-type 'darwin)
-  (setq frame-background-mode 'dark)) ; for solarized-dark
+  (setq frame-background-mode 'light)) ; for solarized-dark
 (if (daemonp)
     (add-hook 'after-make-frame-functions 'colorize-frame)
     (colorize-frame (car (cadr (current-frame-configuration)))))
@@ -32,8 +30,7 @@
 
 ;; package management
 (require 'package)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 (setq package-enable-at-startup nil)
 (load-file "~/.emacs-packages")
@@ -74,6 +71,11 @@
 (put 'narrow-to-region 'disabled nil) ; C-x n n
 (put 'suspend-frame 'disabled t)
 
+;; Configure scratch buffer
+(setq
+  initial-major-mode 'markdown-mode
+  initial-scratch-message nil)
+
 ;;; Custom key bindings
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "<f10>") 'show-ws-toggle-show-trailing-whitespace)
@@ -82,7 +84,7 @@
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-c w") 'delete-trailing-whitespace)
-(global-set-key (kbd "M-RET") 'eshell)
+;; (global-set-key (kbd "M-RET") 'eshell)
 (windmove-default-keybindings 'meta) ; M-<arrows>
 
 ;;; Adding things to auto-mode-alist
@@ -100,6 +102,9 @@
                          ("Gemfile\\'" . ruby-mode)
                          ("Guardfile\\'" . ruby-mode))))
   (setq-default auto-mode-alist (append auto-mode-alist ruby-file-types)))
+;; ROS launch files
+(add-to-list 'auto-mode-alist '("\\.launch\\'" . xml-mode))
+(add-to-list 'auto-mode-alist '("\\.test\\'" . xml-mode))
 
 ;; Lisp indentation things
 (put 'setq 'lisp-indent-function 'defun)
@@ -113,7 +118,9 @@
 
 ;;; Adding hooks
 (add-hook 'text-mode-hook 'visual-line-mode)
+(add-hook 'text-mode-hook (lambda () (flyspell-mode 1)))
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook
   (lambda () (local-set-key (kbd "<f9>") 'eval-buffer)))
 (add-hook 'java-mode-hook
@@ -128,8 +135,22 @@
   (lambda ()
     (setq compile-command "g++ -std=c++11 -g") ; Compile with g++ -g
     (local-set-key (kbd "C-x C-e") 'compile)))
+(add-hook 'js2-mode-hook
+  (lambda ()
+    (setq js2-bounce-indent-p t)
+    (setq js2-basic-offset 2)))
+(add-hook 'markdown-mode-hook 'pandoc-mode)
+(add-hook 'markdown-mode-hook
+  (lambda ()
+    (local-set-key (kbd "C-x C-e") #'pandoc-convert-to-pdf)))
 
-(add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
+(setq c-default-style "bsd" c-basic-offset 2)
+
+;; https://tex.stackexchange.com/questions/69555/i-want-to-disable-auto-fill-mode-when-editing-equations
+;; (add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
+;; (add-hook 'latex-mode-hook 'turn-on-auto-fill) ; regular emacs latex
+(add-hook 'LaTeX-mode-hook #'turn-on-flyspell)
+(add-hook 'latex-mode-hook #'turn-on-flyspell)
 (defun TeX-word-count (&optional)
   (interactive)
   (let ((command "texcount -sum -1 ")
@@ -291,29 +312,29 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 ;;; Set persistent TODO-BUFFER (todo file at ~/.todo) based off
 ;;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
 ;;; and http://stackoverflow.com/a/358740
-(defvar TODO-FILENAME "~/.todo/todo" "to-do file location")
-(defvar TODO-BUFFER "*todo*" "buffer to load into")
-(defadvice kill-buffer (around bury-scratch activate)
-  "Bury TODO-BUFFER instead of killing it."
-  (let ((buffer-to-kill (ad-get-arg 0)))
-    (if (equal buffer-to-kill TODO-BUFFER) (bury-buffer) ad-do-it)))
-(defadvice save-buffer (around save-todo activate)
-  "Write contents of *todo* to TODO-FILENAME"
-  (let ((buffer-to-save (buffer-name (current-buffer))))
-    (if (equal buffer-to-save TODO-BUFFER)
-        (write-region nil nil TODO-FILENAME) ad-do-it)))
-(defun load-todo ()
-  "Load the contents of TODO-FILENAME into the TODO-BUFFER."
-  (with-current-buffer (get-buffer-create TODO-BUFFER)
-    (org-mode)
-    (insert-file-contents TODO-FILENAME)))
-(defun save-todo ()
-  "Save the contents of the TODO-BUFFER into TODO-FILENAME."
-  (let ((todo-buffer (get-buffer TODO-BUFFER)))
-    (if (not (null todo-buffer))
-        (with-current-buffer todo-buffer (write-file TODO-FILENAME)))))
-(push 'save-todo kill-emacs-hook) ; Save before killing
-(load-todo) ; Run load-todo function at startup
+;; (defvar TODO-FILENAME "~/.todo/todo" "to-do file location")
+;; (defvar TODO-BUFFER "*todo*" "buffer to load into")
+;; (defadvice kill-buffer (around bury-scratch activate)
+;;   "Bury TODO-BUFFER instead of killing it."
+;;   (let ((buffer-to-kill (ad-get-arg 0)))
+;;     (if (equal buffer-to-kill TODO-BUFFER) (bury-buffer) ad-do-it)))
+;; (defadvice save-buffer (around save-todo activate)
+;;   "Write contents of *todo* to TODO-FILENAME"
+;;   (let ((buffer-to-save (buffer-name (current-buffer))))
+;;     (if (equal buffer-to-save TODO-BUFFER)
+;;         (write-region nil nil TODO-FILENAME) ad-do-it)))
+;; (defun load-todo ()
+;;   "Load the contents of TODO-FILENAME into the TODO-BUFFER."
+;;   (with-current-buffer (get-buffer-create TODO-BUFFER)
+;;     (org-mode)
+;;     (insert-file-contents TODO-FILENAME)))
+;; (defun save-todo ()
+;;   "Save the contents of the TODO-BUFFER into TODO-FILENAME."
+;;   (let ((todo-buffer (get-buffer TODO-BUFFER)))
+;;     (if (not (null todo-buffer))
+;;         (with-current-buffer todo-buffer (write-file TODO-FILENAME)))))
+;; (push 'save-todo kill-emacs-hook) ; Save before killing
+;; (load-todo) ; Run load-todo function at startup
 
 ;;; Packages on packages on packages...
 
@@ -329,7 +350,7 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 (define-key evil-motion-state-map "^" "g^")
 (define-key evil-motion-state-map "0" "g0")
 
-(define-key evil-normal-state-map (kbd "SPC") 'ace-jump-mode)
+(define-key evil-normal-state-map (kbd "SPC") 'avy-goto-word-1)
 (define-key evil-normal-state-map (kbd "C-w") 'kill-region)
 (define-key evil-normal-state-map (kbd "C-a") 'move-beginning-of-line)
 (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
@@ -345,7 +366,7 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 (define-key evil-insert-state-map (kbd "C-p") 'previous-line)
 (define-key evil-insert-state-map (kbd "C-n") 'next-line)
 
-(define-key evil-visual-state-map (kbd "SPC") 'ace-jump-mode)
+(define-key evil-visual-state-map (kbd "SPC") 'avy-goto-word-1)
 (define-key evil-visual-state-map (kbd "C-w") 'kill-region)
 (define-key evil-visual-state-map (kbd "C-a") 'move-beginning-of-line)
 (define-key evil-visual-state-map (kbd "C-e") 'move-end-of-line)
@@ -361,21 +382,18 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
                   ruby-forward-sexp nil)))
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 
-;; ace-jump-mode
-(add-to-list 'load-path "~/.emacs.d/ace-jump-mode") ; use custom version
-(autoload 'ace-jump-mode "ace-jump-mode" "Emacs quick move minor mode" t)
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
-(setq ace-jump-mode-gray-background nil)
+;; avy-mode
+(define-key global-map (kbd "C-c SPC") 'avy-goto-word-1)
 
 ;; expand-region.el
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 ;; multiple-cursors.el
-(global-set-key (kbd "C-c .") 'mc/mark-more-like-this-extended)
-(global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-c ?") 'mc/mark-all-in-region)
-(global-set-key (kbd "C-c a") 'mc/mark-all-dwim)
-(global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
+;; (global-set-key (kbd "C-c .") 'mc/mark-more-like-this-extended)
+;; (global-set-key (kbd "C-c !") 'mc/mark-all-like-this)
+;; (global-set-key (kbd "C-c ?") 'mc/mark-all-in-region)
+;; (global-set-key (kbd "C-c a") 'mc/mark-all-dwim)
+;; (global-set-key (kbd "C-S-a") 'mc/edit-beginnings-of-lines)
 
 ;; fold-this
 (add-to-list 'load-path "~/.emacs.d/fold-this.el") ; use custom version
@@ -426,12 +444,24 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
 ;; iedit
 (require 'iedit)
 
+;; dired
+(require 'dired-x)
+;; (setq dired-omit-files "^.*~$")
+(add-hook 'dired-mode-hook (lambda () (dired-omit-mode t)))
+
 ;; auctex
 (setq
   TeX-PDF-mode t
   TeX-save-query nil
   TeX-command-force "LaTeX"
   TeX-install-font-lock 'tex-font-setup)
+
+;; zotero -- adapted from
+;; http://www.mkbehr.com/posts/a-research-workflow-with-zotero-and-org-mode/
+;; (add-hook 'org-mode-hook
+;;   (lambda () (org-zotxt-mode 1) (flyspell-mode 1)))
+;; (eval-after-load "zotxt"
+;;   '(setq zotxt-default-bibliography-style "minimal"))
 
 ;; regexp-builder
 (require 're-builder)
@@ -452,5 +482,91 @@ negative; error if CHAR not found. Ignores CHAR at point. Equivalent to vim's
     mac-command-modifier 'meta
     mac-option-modifier nil))
 
+;; (setq visible-bell t)
+;; (setq visible-bell nil)
+(setq ring-bell-function 'ignore)
+
+(require 'bibtex)
+(setq reftex-default-bibliography '("~/Documents/Library/references.bib"))
+(setq org-ref-bibliography-notes "~/Documents/Library/notes.org"
+      org-ref-default-bibliography '("~/Documents/Library/references.bib")
+      org-ref-pdf-directory "~/Documents/Library/pdfs/")
+(setq bibtex-field-indentation 2
+      bibtex-text-indentation (+ 2 (length "publisher = "))
+      bibtex-align-at-equal-sign t
+      bibtex-completion-bibliography "~/Documents/Library/references.bib"
+      bibtex-completion-library-path "~/Documents/Library/bibtex-pdfs"
+      bibtex-completion-notes-path "~/Documents/Library/helm-bibtex-notes")
+(setq bibtex-completion-pdf-open-function
+  (lambda (fpath)
+    (start-process "open" "*open*" "open" fpath)))
+(defun bibtex-autokey-get-venue ()
+  (let ((booktitle (bibtex-autokey-get-field "booktitle"))
+        (journal (bibtex-autokey-get-field "journal")))
+    (cond
+     ((s-present? booktitle) booktitle)
+     ((s-present? journal) journal)
+     (t ""))))
+;; (defun bibtex-generate-autokey ()
+;;   "Automatically generate a key for a BibTeX entry: [author]-[venue][year]-[title]."
+;;   (let* ((bibtex-autokey-names 1)
+;;          (bibtex-autokey-year-length 4)
+;;          (bibtex-autokey-titleword-length nil)
+;;          (bibtex-autokey-titleword-separator "")
+;;          (bibtex-autokey-title-terminators " ")
+;;          (author (bibtex-autokey-get-names))
+;;          (venue (bibtex-autokey-get-venue))
+;;          (year (bibtex-autokey-get-year))
+;;          (title (bibtex-autokey-get-title))
+;;          key)
+;;     (format "%s-%s%s-%s" author venue year title)))
+(defun bibtex-generate-autokey ()
+  "Automatically generate a key for a BibTeX entry: [author][year][annote/title]."
+  (let* ((bibtex-autokey-names 1)
+         (bibtex-autokey-year-length 4)
+         (bibtex-autokey-titleword-length nil)
+         (bibtex-autokey-titleword-separator "")
+         (bibtex-autokey-title-terminators " ")
+         (author (bibtex-autokey-get-names))
+         (year (bibtex-autokey-get-year))
+         (annote (bibtex-autokey-get-field "annote"))
+         (title (bibtex-autokey-get-title))
+         key)
+    (format "%s%s%s" author year (if (s-blank? annote) title annote))))
+;; (defun orcb-clean-author ()
+;;   "Matching parentheses customizations."
+;;   (show-paren-mode t)
+;;   (setq-default show-paren-delay 0))
+(add-hook 'bibtex-mode-hook
+  (lambda ()
+    (setq
+      fill-column (point-max)
+      org-ref-formatted-citation-backend "prl"
+      org-ref-formatted-citation-formats
+      '(("prl" . (("inproceedings" . "${author}. ${title}. ${booktitle}. ${year}.")
+                 ("article" . "${author}. ${title}. ${journal}. ${year}.")
+                 (nil . "${author}. ${title}. ${year}."))))
+      org-ref-bibtex-sort-order
+      '(("article"  . ("title" "author" "journal" "year" "volume" "number" "pages"))
+        ("inproceedings" . ("title" "author" "booktitle" "year"))))))
 
 (message "Successfully loaded personal settings.")
+
+;; junk?
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" default)))
+ '(package-selected-packages
+   (quote
+    (pandoc-mode python-black org-ref zotxt yasnippet yaml-mode smex rainbow-mode rainbow-delimiters multiple-cursors matlab-mode markdown-mode magit js2-mode iedit git-gutter expand-region evil-nerd-commenter evil csv-mode cmake-mode buffer-move auctex))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
