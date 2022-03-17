@@ -107,6 +107,7 @@ fi
 
 export EDITOR="vim"
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+PATH=$PATH:$HOME/.emacs.d/bin  # Add doom-emacs to PATH
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     ### Added by the Heroku Toolbelt
     PATH=$PATH:/usr/local/heroku/bin # Added by the Heroku Toolbelt
