@@ -4,6 +4,7 @@ set -ex
 
 dotfiles=$(dirname "$0")
 
-ln -s ${dotfiles}/.doom.d $HOME/.doom.d
+ln -s `realpath ${dotfiles}/.doom.d` $HOME/.doom.d
 
-ln -s ${dotfiles}/.bashrc $HOME/.bashrc
+mv $HOME/.bashrc $HOME/.bashrc.bak
+ln -s `realpath ${dotfiles}/.bashrc` $HOME/.bashrc
