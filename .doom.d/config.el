@@ -42,6 +42,7 @@
 
 ;; Evil configuration
 ;; TODO: replace define-key with map!
+;; https://github.com/noctuid/evil-guide/blob/master/README.org
 (after! evil
   ;; move by visual line
   ;; TODO: check evil settings (https://evil.readthedocs.io/en/latest/settings.html)
@@ -60,12 +61,13 @@
   (define-key evil-normal-state-map (kbd "C-y") 'yank)
   (define-key evil-normal-state-map (kbd "=") 'er/expand-region)
 
+  ;; https://github.com/hlissner/doom-emacs/blob/master/modules/lang/markdown/config.el
   (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
   (define-key evil-insert-state-map (kbd "C-w") 'kill-region)
   (define-key evil-insert-state-map (kbd "C-a") 'move-beginning-of-line)
   (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
   (define-key evil-insert-state-map (kbd "C-y") 'yank)
-  (define-key evil-insert-state-map (kbd "C-d") 'delete-char)  ; overridden by evil-markdown-mode
+  (define-key evil-insert-state-map (kbd "C-d") 'delete-char)
   (define-key evil-insert-state-map (kbd "C-p") 'previous-line)
   (define-key evil-insert-state-map (kbd "C-n") 'next-line)
 

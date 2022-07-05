@@ -49,3 +49,6 @@
       (format "%s%s%s" author year (if (s-blank? annote) title annote)))))
 
 (map! :after bibtex :map bibtex-mode-map :leader :nv "cf" #'org-ref-clean-bibtex-entry)
+
+;; Markdown
+(remove-hook 'markdown-mode-hook 'evil-markdown-mode)
