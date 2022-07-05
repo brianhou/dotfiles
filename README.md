@@ -35,3 +35,10 @@ $ sudo apt install ripgrep fd-find emacs27
 $ git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
 $ doom install
 ```
+
+## Python
+
+Install [pyenv][pyenv-install] and [pyenv-virtualenv][pyenv-virtualenv-install].
+
+[pyenv-install]: https://github.com/pyenv/pyenv#installation
+[pyenv-virtualenv-install]: https://github.com/pyenv/pyenv-virtualenv#installation
