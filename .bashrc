@@ -117,8 +117,19 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # pyenv
     export PYENV_ROOT=/usr/local/var/pyenv
+    if which pyenv > /dev/null; then export PATH="$PYENV_ROOT/bin:$PATH"; fi
+
+    if which pyenv > /dev/null; then eval "$(pyenv init --path)"; fi
     if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
     if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+    # TeX
+    PATH=/usr/local/opt/clang-format/bin:$PATH:/Library/TeX/Root/bin/x86_64-darwin/
+    PATH=$PATH:$HOME/.local/bin # Add ~/.local/bin to PATH
 fi
+
+export COPYFILE_DISABLE=1  # Stop including ._ files
+export BASH_SILENCE_DEPRECATION_WARNING=1  # Stop recommending zsh
+export HOMEBREW_NO_GITHUB_API=1
+export TK_SILENCE_DEPRECATION=1
 
 fortune | cowsay -f tux

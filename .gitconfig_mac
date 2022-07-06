@@ -27,5 +27,7 @@
 	autocorrect = 10
 [diff "zip"]
 	textconv = unzip -v
+[diff "csv"]
+	wordRegex = [^[:space:],]+
 [grep]
 	lineNumber = true
