@@ -21,12 +21,17 @@ BASH_SILENCE_DEPRECATION_WARNING=1  # Stop recommending zsh
 export PATH="$PATH:$HOME/.emacs.d/bin"  # Add doom-emacs to PATH
 
 # Homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if [[ $(uname -m) == 'arm64' ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
 export HOMEBREW_NO_GITHUB_API=1
 
 # Git
-. /opt/homebrew/etc/bash_completion.d/git-completion.bash
-# TODO: manage global gitconfig
+. $HOMEBREW_PREFIX/etc/bash_completion.d/git-completion.bash
+alias g='git'
+__git_complete g __git_main
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -48,7 +53,7 @@ alias ll='ls -alF'
 # Prompt #
 ##########
 
-. /opt/homebrew/etc/bash_completion.d/git-prompt.sh
+. $HOMEBREW_PREFIX/etc/bash_completion.d/git-prompt.sh
 GIT_PS1_SHOWDIRTYSTATE=1
 GIT_PS1_SHOWCOLORHINTS=1
 GIT_PS1_SHOWUPSTREAM="auto"
