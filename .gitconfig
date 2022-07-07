@@ -3,9 +3,9 @@
 	email = brian.hou@live.com
 [core]
 	editor = vim
-	excludesfile = /home/brian/.global_gitignore
+	excludesfile = ~/.gitignore_global
 	autocrlf = input
-	attributesfile = /home/brian/.gitattributes
+	attributesfile = ~/.gitattributes
 [merge]
 	tool = meld
 [color]
