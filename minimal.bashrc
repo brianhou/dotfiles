@@ -45,6 +45,7 @@ export TK_SILENCE_DEPRECATION=1
 # Aliases
 alias rm='rm -i'
 alias ll='ls -alF'
+alias e='emacs'
 # [ -r ~/.bash_aliases ]        && . ~/.bash_aliases
 # [ -r ~/private.bash_aliases ] && . ~/private.bash_aliases
 
@@ -53,12 +54,20 @@ alias ll='ls -alF'
 # Prompt #
 ##########
 
+# Restore pyenv virtualenv prompt
+function _pyenv_virtualenv_name {
+    local version=$(pyenv version-name)
+    if [[ $version != "system" ]]; then
+        echo -n "($version) "
+    fi
+}
+
 . $HOMEBREW_PREFIX/etc/bash_completion.d/git-prompt.sh
 GIT_PS1_SHOWDIRTYSTATE=1
 GIT_PS1_SHOWCOLORHINTS=1
 GIT_PS1_SHOWUPSTREAM="auto"
 GIT_PS1_STATESEPARATOR=""
-PROMPT_COMMAND='__git_ps1 "\e[34m\u\e[0m@\e[36m\h\e[0m:\e[34m\W\e[0m" "\e[0;1m \$\e[0m "'
+PROMPT_COMMAND='__git_ps1 "$(_pyenv_virtualenv_hook)$(_pyenv_virtualenv_name)\e[34m\u\e[0m@\e[36m\h\e[0m:\e[34m\W\e[0m" "\e[0;1m \$\e[0m "'
 
 
 ########################################################
