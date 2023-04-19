@@ -57,7 +57,7 @@ alias e='emacs'
 # Restore pyenv virtualenv prompt
 function _pyenv_virtualenv_name {
     local version=$(pyenv version-name)
-    if [[ $version != "system" ]]; then
+    if ! [[ $version =~ ^"3." ]]; then
         echo -n "($version) "
     fi
 }
