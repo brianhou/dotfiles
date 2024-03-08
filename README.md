@@ -48,10 +48,16 @@ $ git clone git@github.com:brianhou/dotfiles.git
 
 7.  Install [pyenv][install-pyenv] and [pyenv-virtualenv][install-pyenv-virtualenv].
 
-    ``` bash
+    ```bash
     $ brew install pyenv pyenv-virtualenv
     $ brew install openssl readline sqlite3 xz zlib tcl-tk
     $ pyenv install <version>
+    ```
+
+8.  Install other useful tools.
+
+    ```bash
+    $ brew install wget ffmpeg
     ```
 
 

@@ -14,8 +14,8 @@ shopt -s dirspell       # autocorrect for all directory names
 EDITOR="vim"
 
 # macOS
-COPYFILE_DISABLE=1                  # Stop including ._ files
-BASH_SILENCE_DEPRECATION_WARNING=1  # Stop recommending zsh
+export COPYFILE_DISABLE=1                  # Stop including ._ files
+export BASH_SILENCE_DEPRECATION_WARNING=1  # Stop recommending zsh
 
 # Emacs
 export PATH="$PATH:$HOME/.emacs.d/bin"  # Add doom-emacs to PATH
