@@ -4,6 +4,8 @@
 <dict>
 	<key>Command</key>
 	<string>/opt/homebrew/bin/bash</string>
+	<key>ConservativeURLGuessing</key>
+	<true/>
 	<key>Default Bookmark Guid</key>
 	<string>73956BAD-5931-4899-9E8A-720FEE652180</string>
 	<key>GlobalKeyMap</key>
