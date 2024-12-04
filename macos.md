@@ -12,6 +12,16 @@ Apple Internal Keyboard / Trackpad
 | Command    | Command    |
 | Globe      | Globe      |
 
+NuPhy Air75 V2
+
+| Logical    | Remapped   |
+| ---------- | ---------- |
+| Caps Lock  | Control    |
+| Control    | Option     |
+| Option     | Control    |
+| Command    | Command    |
+| Function   | Function   |
+
 USB-HID Keyboard ([Vortex Race 3 RGB](https://mechanicalkeyboards.com/manuals/New_75_Race_3_manual.pdf))
 
 > Note: ensure that keyboard is in Mac mode with `Pn + M`.
