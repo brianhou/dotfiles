@@ -33,7 +33,7 @@
 (global-set-key (kbd "M-;")         'comment-line) ; so confused
 
 ;; Doom Emacs configuration
-(setq doom-theme 'doom-solarized-light)
+(setq doom-theme 'doom-outrun-electric)
 (setq doom-big-font-increment 2)  ; big font mode is +2
 (remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
 
