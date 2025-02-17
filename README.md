@@ -40,8 +40,9 @@ $ git clone git@github.com:brianhou/dotfiles.git
     ```bash
     $ brew install git ripgrep coreutils fd
     $ brew tap railwaycat/emacsmacport
-    $ brew install emacs-mac --with-modules --with-starter
-    $ ln -s /opt/homebrew/Cellar/emacs-mac/<version>/Emacs.app /Applications/Emacs.app
+    $ brew install emacs-mac --with-modules --with-starter --with-emacs-big-sur-icon
+    $ # https://github.com/railwaycat/homebrew-emacsmacport/blob/master/docs/emacs-start-helpers.md#helper-2
+    $ osacompile -o /Applications/Emacs.app -e "tell application \"Finder\" to open POSIX file \"$(brew --prefix)/opt/emacs-mac/Emacs.app\""
     $ git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
     $ ~/.emacs.d/bin/doom install
     ```
