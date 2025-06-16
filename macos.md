@@ -22,6 +22,15 @@ NuPhy Air75 V2
 | Command    | Command    |
 | Function   | Function   |
 
+Glove80
+
+| Logical    | Remapped   |
+| ---------- | ---------- |
+| Control    | Command    |
+| Option     | Option     |
+| Command    | Control    |
+| Function   | Function   |
+
 USB-HID Keyboard ([Vortex Race 3 RGB](https://mechanicalkeyboards.com/manuals/New_75_Race_3_manual.pdf))
 
 > Note: ensure that keyboard is in Mac mode with `Pn + M`.
