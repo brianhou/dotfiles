@@ -52,3 +52,10 @@ USB Keyboard (Logitech K120)
 | Option     | Command    |
 | Command    | Option     |
 | Globe      | Globe      |
+
+## Miscellaneous Preferences
+
+Extend the time that a screenshot remains on screen to 10s.
+```bash
+defaults write com.apple.screencaptureui "thumbnailExpiration" -float 10 && killall SystemUIServer
+```
