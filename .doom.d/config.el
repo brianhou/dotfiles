@@ -38,43 +38,24 @@
   (setq avy-keys (number-sequence ?a ?z)))
 
 ;; Evil configuration
-;; TODO: replace define-key with map!
-;; https://github.com/noctuid/evil-guide/blob/master/README.org
+;; TODO: Consider using map! rather than evil-define-key.
 (after! evil
-  ;; move by visual line
-  ;; TODO: check evil settings (https://evil.readthedocs.io/en/latest/settings.html)
-  ;; want visual line movement, but not on other commands (e.g. delete, visual
-  ;; select should still operate on the logical row)
-  ;; (define-key evil-motion-state-map "j" "gj")
-  ;; (define-key evil-motion-state-map "k" "gk")
-  ;; (define-key evil-motion-state-map "$" "g$")
-  ;; (define-key evil-motion-state-map "^" "g^")
-  ;; (define-key evil-motion-state-map "0" "g0")
+  ;; Add more navigation in normal/visual mode.
+  (evil-define-key '(normal visual) 'global
+    (kbd "g SPC") 'avy-goto-word-1
+    (kbd "=") 'er/expand-region)
 
-  (define-key evil-normal-state-map (kbd "g SPC") 'avy-goto-word-1)
-  (define-key evil-normal-state-map (kbd "C-w") 'kill-region)
-  (define-key evil-normal-state-map (kbd "C-a") 'move-beginning-of-line)
-  (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
-  (define-key evil-normal-state-map (kbd "C-y") 'yank)
-  (define-key evil-normal-state-map (kbd "=") 'er/expand-region)
-
-  ;; https://github.com/hlissner/doom-emacs/blob/master/modules/lang/markdown/config.el
-  (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
-  (define-key evil-insert-state-map (kbd "C-w") 'kill-region)
-  (define-key evil-insert-state-map (kbd "C-a") 'move-beginning-of-line)
-  (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
-  (define-key evil-insert-state-map (kbd "C-y") 'yank)
-  (define-key evil-insert-state-map (kbd "C-d") 'delete-char)
-  (define-key evil-insert-state-map (kbd "C-p") 'previous-line)
-  (define-key evil-insert-state-map (kbd "C-n") 'next-line)
-
-  (setq evil-respect-visual-line-mode t)
-  (define-key evil-visual-state-map (kbd "g SPC") 'avy-goto-word-1)
-  (define-key evil-visual-state-map (kbd "C-w") 'kill-region)
-  (define-key evil-visual-state-map (kbd "C-a") 'move-beginning-of-line)
-  (define-key evil-visual-state-map (kbd "C-e") 'move-end-of-line)
-  (define-key evil-visual-state-map (kbd "C-y") 'yank)
-  (define-key evil-visual-state-map (kbd "=") 'er/expand-region))
+  ;; Use Emacs keybindings where there isn't a conflict with Vim.
+  (evil-define-key '(normal visual insert) 'global
+    (kbd "C-k") 'kill-line
+    (kbd "C-w") 'kill-region
+    (kbd "C-a") 'move-beginning-of-line
+    (kbd "C-e") 'move-end-of-line
+    (kbd "C-y") 'yank)
+  (evil-define-key 'insert 'global
+    (kbd "C-d") 'delete-char
+    (kbd "C-p") 'previous-line
+    (kbd "C-n") 'next-line))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
