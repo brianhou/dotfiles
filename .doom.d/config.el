@@ -38,24 +38,19 @@
   (setq avy-keys (number-sequence ?a ?z)))
 
 ;; Evil configuration
-;; TODO: Consider using map! rather than evil-define-key.
-(after! evil
-  ;; Add more navigation in normal/visual mode.
-  (evil-define-key '(normal visual) 'global
-    (kbd "g SPC") 'avy-goto-word-1
-    (kbd "=") 'er/expand-region)
-
-  ;; Use Emacs keybindings where there isn't a conflict with Vim.
-  (evil-define-key '(normal visual insert) 'global
-    (kbd "C-k") 'kill-line
-    (kbd "C-w") 'kill-region
-    (kbd "C-a") 'move-beginning-of-line
-    (kbd "C-e") 'move-end-of-line
-    (kbd "C-y") 'yank)
-  (evil-define-key 'insert 'global
-    (kbd "C-d") 'delete-char
-    (kbd "C-p") 'previous-line
-    (kbd "C-n") 'next-line))
+(map!
+ ;; Add more navigation in normal/visual mode.
+ :nv  "g SPC" #'avy-goto-word-1
+ :nv  "="     #'er/expand-region
+ ;; Use Emacs keybindings where there isn't a conflict with Vim.
+ :nvi "C-k"   #'kill-line
+ :nvi "C-w"   #'kill-region
+ :nvi "C-a"   #'move-beginning-of-line
+ :nvi "C-e"   #'move-end-of-line
+ :nvi "C-y"   #'yank
+ :i   "C-d"   #'delete-char
+ :i   "C-p"   #'previous-line
+ :i   "C-n"   #'next-line)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
