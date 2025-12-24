@@ -1,7 +1,4 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-;;;
-;;; Things to check:
-;;; - iedit?
 
 ;; Base Emacs configuration
 
@@ -12,7 +9,7 @@
 (setq kill-whole-line t)
 (setq mouse-wheel-progressive-speed nil)
 ;; (setq display-line-numbers-type t)
-(when IS-MAC (setq mac-command-modifier 'meta) (setq mac-option-modifier nil))
+(when (featurep :system 'macos) (setq mac-command-modifier 'meta) (setq mac-option-modifier nil))
 
 (put 'upcase-region 'disabled nil) ; C-x C-u
 (put 'downcase-region 'disabled nil) ; C-x C-l
@@ -71,6 +68,7 @@
   (define-key evil-insert-state-map (kbd "C-p") 'previous-line)
   (define-key evil-insert-state-map (kbd "C-n") 'next-line)
 
+  (setq evil-respect-visual-line-mode t)
   (define-key evil-visual-state-map (kbd "g SPC") 'avy-goto-word-1)
   (define-key evil-visual-state-map (kbd "C-w") 'kill-region)
   (define-key evil-visual-state-map (kbd "C-a") 'move-beginning-of-line)
