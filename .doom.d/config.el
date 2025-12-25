@@ -124,3 +124,8 @@
 (global-set-key (kbd "<f5>") 'reload-file)
 
 (add-hook! text-mode #'visual-line-mode)
+
+(defadvice! widen-before-doom-persist-scratch-buffer-h (fn &rest args)
+  "Widen before persisting the scratch buffer."
+  :around #'doom-persist-scratch-buffer-h
+  (save-restriction (widen) (apply fn args)))
